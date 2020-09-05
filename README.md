@@ -5,7 +5,7 @@ This is a template for creating Docker based Rails development environments.
 ## Get Started
 
 ```bash
-docker-compose run --no-deps rails rails new . --force --skip-bootsnap --skip-coffee --skip-test --webpack=stimulus --database=mysql
+docker-compose run --no-deps rails rails new . --force --skip-bootsnap --skip-coffee --webpack=stimulus --database=mysql
 ```
 
 Update the `config/database.yml` with the correct database credientials and create the database:
@@ -33,3 +33,5 @@ group :development, :test do
   gem 'pry-byebug'
 end
 ```
+
+To install, `docker-compose exec rails bundle install`
