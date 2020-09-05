@@ -49,10 +49,9 @@ services:
 
   sidekiq:
     <<: *app
-    command: bundle exec sidekiq -C config/sidekiq.yml
+    command: bash -c "mkdir -p config && touch config/sidekiq.yml && bundle exec sidekiq -C config/sidekiq.yml"
     volumes:
       - .:/usr/src/app:cached
-      - ./config/sidekiq.yml:/usr/src/app/config/sidekiq.yml
     depends_on:
       - rails
       - redis
