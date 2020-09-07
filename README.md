@@ -2,6 +2,12 @@
 
 This is a template for creating Docker based Rails development environments.
 
+## Todo
+
++ Add VIPs for image processing from builder
++ Add Elasticsearch/Kibana
++ Add WKD HTML for PDF generation
+
 ## Get Started
 
 ```bash
@@ -23,7 +29,8 @@ Overwrite /usr/src/app/README.md? (enter "h" for help) [Ynaqdhm] n
 Overwrite /usr/src/app/Gemfile? (enter "h" for help) [Ynaqdhm] n
 ```
 
-Update the `config/database.yml` with the correct database credientials and create the database:
+Update the `config/database.yml` with the correct database credientials and create the database, and create the database within the database container using the connection details provided.
+Please note the `host` field is set to `db`, the database container name:
 
 ```yml
 adapter: mysql2
@@ -49,8 +56,46 @@ group :development, :test do
 end
 ```
 
-Finalise the container:
+Update the `sidekiq.yml` with any additionally required queues:
+
+```yml
+---
+:concurrency: 5
+staging:
+  :concurrency: 10
+production:
+  :concurrency: 20
+:queues:
+  - critical
+  - default
+  - low
+
+ ```
+
+ ## Finalise the container
+
+ The container was built during the `run` process which created Rails, but we need to bring them up and copy all the new Gems and Node packages over:
+
+ ```bash
+ docker-compose up --build
+ ```
+
+ ## Changing Rails configuration
+
+ If you wish to make changes to Rails configuration files, use:
+
+ ```bash
+docker-compose stop rails
+docker-compose start rails
+ ```
+
+This will bring the container up in the background with the new configuration.
+
+## Executing commands
+
+To execute a command on a running container, use the following command:
 
 ```bash
-docker-compose up --build
+# docker-compose exec <container_name> <command>
+docker-compose exec rails rails db:migrate
 ```
