@@ -27,14 +27,12 @@ RUN rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/app
 
-COPY package* yarn* ./
-RUN yarn install --check-files
-
 ENV LANG=C.UTF-8 \
   BUNDLE_JOBS=4 \
   BUNDLE_RETRY=3
 
-COPY Gemfile* ./
+COPY Gemfile* package* yarn* ./
+RUN yarn install --check-files
 
 RUN gem update --system \
     && gem install bundler \
