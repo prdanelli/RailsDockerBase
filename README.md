@@ -5,7 +5,7 @@ This is a template for creating Docker based Rails development environments.
 ## Get Started
 
 ```bash
-docker-compose exec --no-deps rails rails new . --skip-spring --skip-bootsnap --skip-coffee --webpack=stimulus --database=mysql
+docker-compose run --no-deps rails rails new . --skip-spring --skip-bootsnap --skip-coffee --webpack=stimulus --database=mysql
 ```
 
 Select `n` when asked to override the `README.md` and `Gemfile`:
