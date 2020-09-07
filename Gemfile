@@ -23,9 +23,6 @@ gem 'image_processing', '~> 1.2'
 
 group :development, :test do
   gem 'pry-byebug'
-
-  gem 'spring'
-  gem 'spring-watcher-listen', '~> 2.0.0'
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
 end
 
