@@ -2,7 +2,7 @@ version: "3.4"
 
 x-app: &app
   build: .
-  image: stimulus-reflex-playground:1.0.0
+  image: RailsDockerbase:1.0.0
   tmpfs:
     - /tmp
   stdin_open: true
