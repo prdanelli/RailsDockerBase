@@ -74,7 +74,7 @@ production:
 
  ## Finalise the container
 
- The container was built during the `run` process which created Rails, but we need to bring them up and copy all the new Gems and Node packages over:
+ The container was built during the `run` process which created the Rails app, but we need to bring them up and copy all the new Gems and Node packages over:
 
  ```bash
  docker-compose up --build
