@@ -20,6 +20,7 @@ gem "sidekiq"
 gem "stimulus_reflex" #, github: "hopsoft/stimulus_reflex", tag: "v3.3.0.pre2"
 gem 'bcrypt', '~> 3.1.7'
 gem 'image_processing', '~> 1.2'
+gem 'searchkick', '~> 1.1', '>= 1.1.2'
 
 group :development, :test do
   gem 'pry-byebug'
