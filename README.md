@@ -17,15 +17,15 @@ docker-compose run --no-deps rails rails new . --skip-spring --skip-bootsnap --s
 Select `n` when asked to override the `README.md` and `Gemfile`:
 
 ```bash
-       exist
-    conflict  README.md
+			 exist
+		conflict  README.md
 Overwrite /usr/src/app/README.md? (enter "h" for help) [Ynaqdhm] n
-        skip  README.md
-      create  Rakefile
-      create  .ruby-version
-      create  config.ru
-      create  .gitignore
-    conflict  Gemfile
+				skip  README.md
+			create  Rakefile
+			create  .ruby-version
+			create  config.ru
+			create  .gitignore
+		conflict  Gemfile
 Overwrite /usr/src/app/Gemfile? (enter "h" for help) [Ynaqdhm] n
 ```
 
@@ -52,9 +52,11 @@ gem "sidekiq"
 gem "stimulus_reflex"
 
 group :development, :test do
-  gem 'pry-byebug'
+	gem 'pry-byebug'
 end
 ```
+
+Note, you will have to run `docker-compose up --build` after adding Gems. If the container is running you can run `docker-compose exec rails bundle install`/
 
 Update the `sidekiq.yml` with any additionally required queues:
 
@@ -62,32 +64,54 @@ Update the `sidekiq.yml` with any additionally required queues:
 ---
 :concurrency: 5
 staging:
-  :concurrency: 10
+	:concurrency: 10
 production:
-  :concurrency: 20
+	:concurrency: 20
 :queues:
-  - critical
-  - default
-  - low
+	- critical
+	- default
+	- low
 
  ```
 
- ## Finalise the container
+Setup AnyCable Rails by running the following command:
 
- The container was built during the `run` process which created the Rails app, but we need to bring them up and copy all the new Gems and Node packages over:
+```bash
+docker-compose run rails rails g anycable:setup
+```
 
- ```bash
- docker-compose up --build
- ```
+Add the following to your `application.html.erb`
 
- ## Changing Rails configuration
+```erb
+<%= action_cable_meta_tag %>
+```
 
- If you wish to make changes to Rails configuration files, use:
+Inside of `anycable.yml` change `rpc_host: "127.0.0.1:50051"` to `rpc_host: "0.0.0.0:50051"`
 
- ```bash
+For Webpacker, change the `host` and `public` keys to:
+
+```yml
+dev_server:
+  host: webpacker
+  public: 0.0.0.0:3035
+```
+
+## Finalise the container
+
+The container was built during the `run` process which created the Rails app, but we need to bring them up and copy all the new Gems and Node packages over:
+
+```bash
+docker-compose up --build
+```
+
+## Changing Rails configuration
+
+If you wish to make changes to Rails configuration files, use:
+
+```bash
 docker-compose stop rails
 docker-compose start rails
- ```
+```
 
 This will bring the container up in the background with the new configuration.
 
