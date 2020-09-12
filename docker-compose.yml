@@ -15,7 +15,7 @@ x-app: &app
     ANYCABLE_REDIS_URL: redis://redis:6379/3
     ANYCABLE_RPC_HOST: anycable:50051
     ANYCABLE_HOST: 0.0.0.0
-    ANYCABLE_DEBUG: 0
+    ANYCABLE_DEBUG: 1
 
 services:
   rails:
@@ -24,10 +24,11 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - .:/usr/src/app:cached
+      - .:/usr/src/app
     depends_on:
       - db
       - webpacker
+      - websocket
 
   db:
     image: mysql:5.7
@@ -48,9 +49,10 @@ services:
 
   sidekiq:
     <<: *app
-    command: bash -c "mkdir -p config && touch config/sidekiq.yml && bundle exec sidekiq -C config/sidekiq.yml"
+    command: bundle exec sidekiq -C config/sidekiq.yml
     volumes:
-      - .:/usr/src/app:cached
+      - .:/usr/src/app
+      - ./config/sidekiq.yml:/usr/src/app/config/sidekiq.yml
     depends_on:
       - rails
       - redis
@@ -62,7 +64,7 @@ services:
     ports:
       - 6379:6379
     volumes:
-      - ./docker/redis/:/data
+      - ./docker/redis:/data
     command: ["--appendonly yes"]
     healthcheck:
       test: redis-cli ping
@@ -74,13 +76,13 @@ services:
     <<: *app
     command: bash -c "yarn && bin/webpack-dev-server"
     volumes:
-      - .:/usr/src/app:cached
+      - .:/usr/src/app
     ports:
       - 3035:3035
     environment:
       WEBPACKER_DEV_SERVER_HOST: 0.0.0.0
 
-  websocket: &websocket
+  websocket:
     image: anycable/anycable-go:latest
     ports:
       - 8080:8080
@@ -98,22 +100,22 @@ services:
       - websocket
       - redis
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.9.1
-    ports:
-      - "9200:9200"
-    volumes:
-      - ./docker/elasticsearch/:/usr/share/elasticsearch/data
-    environment:
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - "discovery.type=single-node"
+  # elasticsearch:
+  #   image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.9.1
+  #   ports:
+  #     - "9200:9200"
+  #   volumes:
+  #     - ./docker/elasticsearch/:/usr/share/elasticsearch/data
+  #   environment:
+  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+  #     - "discovery.type=single-node"
 
-  kibana:
-    image: docker.elastic.co/kibana/kibana-oss:7.9.1
-    ports:
-      - "5601:5601"
-    depends_on:
-      - elasticsearch
-    environment:
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - "discovery.type=single-node"
+  # kibana:
+  #   image: docker.elastic.co/kibana/kibana-oss:7.9.1
+  #   ports:
+  #     - "5601:5601"
+  #   depends_on:
+  #     - elasticsearch
+  #   environment:
+  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+  #     - "discovery.type=single-node"
