@@ -28,9 +28,11 @@ Overwrite /usr/src/app/README.md? (enter "h" for help) [Ynaqdhm] n
 		conflict  Gemfile
 Overwrite /usr/src/app/Gemfile? (enter "h" for help) [Ynaqdhm] n
 ```
+## Setup
 
-Update the `config/database.yml` with the correct database credientials and create the database, and create the database within the database container using the connection details provided.
-Please note the `host` field is set to `db`, the database container name:
+### Database
+
+Update the `config/database.yml` with the correct database credientials and create the database, and create the database within the database container using the connection details provided. Please note the `host` field is set to `db`, the database container name:
 
 ```yml
 adapter: mysql2
@@ -40,6 +42,8 @@ username: root
 password: root
 host: db
 ```
+
+### Gems
 
 Add the Gems you want, ie:
 
@@ -56,7 +60,9 @@ group :development, :test do
 end
 ```
 
-Note, you will have to run `docker-compose up --build` after adding Gems. If the container is running you can run `docker-compose exec rails bundle install`/
+Note, you will have to run `docker-compose up --build` after adding Gems. If the container is running you can run `docker-compose exec rails bundle install`
+
+### Sidekiq
 
 Update the `sidekiq.yml` with any additionally required queues:
 
@@ -74,6 +80,8 @@ production:
 
  ```
 
+### AnyCable
+
 Setup AnyCable Rails by running the following command:
 
 ```bash
@@ -88,7 +96,9 @@ Add the following to your `application.html.erb`
 
 Inside of `anycable.yml` change `rpc_host: "127.0.0.1:50051"` to `rpc_host: "0.0.0.0:50051"`
 
-For Webpacker, change the `host` and `public` keys to:
+### Webpacker
+
+You will need to change two keys in the `webpacker.yml` file, the `host` and `public` keys, as so:
 
 ```yml
 dev_server:
@@ -96,7 +106,17 @@ dev_server:
   public: 0.0.0.0:3035
 ```
 
-## Finalise the container
+Add the following line to your `application.html.erb`:
+
+```erb
+<%= stylesheet_pack_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+```
+
+### Vips
+
+Vips is installed on the image, to test Vips, go into the rails container `docker-compose exec rails bash`, then move to the public directory `cd /usr/src/app/public`. If you add an image file here, for example called "1.jpg", then you can use the following to rotate it 90 degrees and save it as "2.jpg", `vips rot 1.jpg 2.jpg d90`.
+
+## Finalising the container
 
 The container was built during the `run` process which created the Rails app, but we need to bring them up and copy all the new Gems and Node packages over:
 
