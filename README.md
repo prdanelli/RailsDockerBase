@@ -17,15 +17,15 @@ docker-compose run --no-deps rails rails new . --skip-spring --skip-bootsnap --s
 Select `n` when asked to override the `README.md` and `Gemfile`:
 
 ```bash
-			 exist
-		conflict  README.md
+	exist
+	conflict  README.md
 Overwrite /usr/src/app/README.md? (enter "h" for help) [Ynaqdhm] n
-				skip  README.md
-			create  Rakefile
-			create  .ruby-version
-			create  config.ru
-			create  .gitignore
-		conflict  Gemfile
+	skip  README.md
+	create  Rakefile
+	create  .ruby-version
+	create  config.ru
+	create  .gitignore
+	conflict  Gemfile
 Overwrite /usr/src/app/Gemfile? (enter "h" for help) [Ynaqdhm] n
 ```
 ## Setup
@@ -77,16 +77,9 @@ production:
 	- critical
 	- default
 	- low
-
- ```
-
-### AnyCable
-
-Setup AnyCable Rails by running the following command:
-
-```bash
-docker-compose run rails rails g anycable:setup
 ```
+
+### Action Cable
 
 Add the following to your `application.html.erb`
 
@@ -94,7 +87,21 @@ Add the following to your `application.html.erb`
 <%= action_cable_meta_tag %>
 ```
 
+By default this is set to `async`, however a Redis server is available, and required if you wish to send broadcasts outside the local process, from the `rails console` for instance.
+
+Change `ACTION_CABLE_ADAPTER` to  `redis`.
+
+#### AnyCable
+
+Setup AnyCable by running the following command:
+
+```bash
+docker-compose run --no-deps rails rails g anycable:setup
+```
+
 Inside of `anycable.yml` change `rpc_host: "127.0.0.1:50051"` to `rpc_host: "0.0.0.0:50051"`
+
+Note: Anycable won't autoload your new channels, so if you generate a new channel, you will need to stop your containers and run `docker-compose up --build`.
 
 ### Webpacker
 
@@ -111,6 +118,15 @@ Add the following line to your `application.html.erb`:
 ```erb
 <%= stylesheet_pack_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
 ```
+
+In your `app/packs/application.js` all the following line:
+
+```js
+// Import all CSS within this file
+import "../css/application.scss"
+```
+
+Then create a directory `app/javascript/css` and add any application css in there to have it served and compiled by webpacker.
 
 ### Vips
 
