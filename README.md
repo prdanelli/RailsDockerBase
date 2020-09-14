@@ -2,12 +2,6 @@
 
 This is a template for creating Docker based Rails development environments.
 
-## Todo
-
-+ Add VIPs for image processing from builder
-+ Add Elasticsearch/Kibana
-+ Add WKD HTML for PDF generation
-
 ## Get Started
 
 ```bash
@@ -70,13 +64,13 @@ Update the `sidekiq.yml` with any additionally required queues:
 ---
 :concurrency: 5
 staging:
-  :concurrency: 10
+	:concurrency: 10
 production:
-  :concurrency: 20
+	:concurrency: 20
 :queues:
-  - critical
-  - default
-  - low
+	- critical
+	- default
+	- low
 ```
 
 ### Action Cable
@@ -99,6 +93,21 @@ Setup AnyCable by running the following command:
 docker-compose run --no-deps rails rails g anycable:setup
 ```
 
+```bash
+👋 Welcome to AnyCable interactive installer.
+  conflict  config/cable.yml
+Overwrite /usr/src/app/config/cable.yml? (enter "h" for help) [Ynaqdhm] y
+     force  config/cable.yml
+    create  config/anycable.yml
+      info  ✅ 'config.action_cable.url' has been configured
+      help  ⚠️  If you're using JS client make sure you have `action_cable_meta_tag` included before any <script> tag in your application.html
+Which environment do you use for development? (1) Local, (2) Docker, (0) Skip 0
+      help  ⚠️  Please, read this guide on how to install AnyCable-Go server 👉 https://docs.anycable.io/#/anycable-go/getting_started
+Do you use Heroku for deployment? [Yn] n
+      help  ⚠️  Please, check out the documentation on using AnyCable with Stimulus Reflex: https://docs.anycable.io/#/rails/stimulus_reflex
+      info  ✅ AnyCable has been configured successfully!
+```
+
 Inside of `anycable.yml` change `rpc_host: "127.0.0.1:50051"` to `rpc_host: "0.0.0.0:50051"`
 
 Note: Anycable won't autoload your new channels, so if you generate a new channel, you will need to stop your containers and run `docker-compose up --build`.
@@ -109,8 +118,8 @@ You will need to change two keys in the `webpacker.yml` file, the `host` and `pu
 
 ```yml
 dev_server:
-  host: webpacker
-  public: 0.0.0.0:3035
+	host: webpacker
+	public: 0.0.0.0:3035
 ```
 
 Add the following line to your `application.html.erb`:
@@ -119,7 +128,7 @@ Add the following line to your `application.html.erb`:
 <%= stylesheet_pack_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
 ```
 
-In your `app/packs/application.js` all the following line:
+In your `app/javascripts/packs/application.js` all the following line:
 
 ```js
 // Import all CSS within this file
