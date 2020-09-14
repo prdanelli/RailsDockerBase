@@ -29,22 +29,20 @@ services:
     volumes:
       - .:/usr/src/app
     depends_on:
-      - db
+      - database
       - webpacker
       - websocket
 
-  db:
-    image: mysql:5.7
+  database:
+    image: mariadb:10.5
     environment:
-      MYSQL_DATABASE: stimulusreflex_development
       MYSQL_ROOT_PASSWORD: root
-    command:
-      --max_allowed_packet=1073741824
+      MYSQL_DATABASE: app_development
     volumes:
-      - ./docker/mysql/conf.d:/etc/mysql/conf.d
       - ./docker/mysql/data:/var/lib/mysql
     ports:
       - 3306:3306
+    restart: always
     healthcheck:
       test: mysql --user=root --password=$$MYSQL_ROOT_PASSWORD -e 'SHOW DATABASES;'
       timeout: 5s
