@@ -97,15 +97,15 @@ docker-compose run --no-deps rails rails g anycable:setup
 👋 Welcome to AnyCable interactive installer.
   conflict  config/cable.yml
 Overwrite /usr/src/app/config/cable.yml? (enter "h" for help) [Ynaqdhm] y
-     force  config/cable.yml
-    create  config/anycable.yml
-      info  ✅ 'config.action_cable.url' has been configured
-      help  ⚠️  If you're using JS client make sure you have `action_cable_meta_tag` included before any <script> tag in your application.html
+	 force  config/cable.yml
+	create  config/anycable.yml
+	  info  ✅ 'config.action_cable.url' has been configured
+	  help  ⚠️  If you're using JS client make sure you have `action_cable_meta_tag` included before any <script> tag in your application.html
 Which environment do you use for development? (1) Local, (2) Docker, (0) Skip 0
-      help  ⚠️  Please, read this guide on how to install AnyCable-Go server 👉 https://docs.anycable.io/#/anycable-go/getting_started
+	  help  ⚠️  Please, read this guide on how to install AnyCable-Go server 👉 https://docs.anycable.io/#/anycable-go/getting_started
 Do you use Heroku for deployment? [Yn] n
-      help  ⚠️  Please, check out the documentation on using AnyCable with Stimulus Reflex: https://docs.anycable.io/#/rails/stimulus_reflex
-      info  ✅ AnyCable has been configured successfully!
+	  help  ⚠️  Please, check out the documentation on using AnyCable with Stimulus Reflex: https://docs.anycable.io/#/rails/stimulus_reflex
+	  info  ✅ AnyCable has been configured successfully!
 ```
 
 Inside of `anycable.yml` change `rpc_host: "127.0.0.1:50051"` to `rpc_host: "0.0.0.0:50051"`
@@ -131,11 +131,18 @@ Add the following line to your `application.html.erb`:
 In your `app/javascripts/packs/application.js` all the following line:
 
 ```js
-// Import all CSS within this file
 import "../css/application.scss"
 ```
 
-Then create a directory `app/javascript/css` and add any application css in there to have it served and compiled by webpacker.
+Then create a file `app/javascript/css/application.scss` and add/import any application css in there to have it served and compiled by webpacker.
+
+### Searchkick
+
+If you are using Searchkick, add the initialier to `config/initializers/searchkick.rb` and add the following:
+
+```ruby
+Searchkick.client = Elasticsearch::Client.new(hosts: ["elasticsearch:9200"], retry_on_failure: true)
+```
 
 ### Vips
 
