@@ -100,17 +100,9 @@ Overwrite /usr/src/app/config/cable.yml? (enter "h" for help) [Ynaqdhm] y
 	 force  config/cable.yml
 	create  config/anycable.yml
 	  info  ✅ 'config.action_cable.url' has been configured
-	  help  ⚠️  If you're using JS client make sure you have `action_cable_meta_tag` included before any <script> tag in your application.html
-Which environment do you use for development? (1) Local, (2) Docker, (0) Skip 0
-	  help  ⚠️  Please, read this guide on how to install AnyCable-Go server 👉 https://docs.anycable.io/#/anycable-go/getting_started
-Do you use Heroku for deployment? [Yn] n
-	  help  ⚠️  Please, check out the documentation on using AnyCable with Stimulus Reflex: https://docs.anycable.io/#/rails/stimulus_reflex
-	  info  ✅ AnyCable has been configured successfully!
 ```
 
-Inside of `anycable.yml` change `rpc_host: "127.0.0.1:50051"` to `rpc_host: "0.0.0.0:50051"`
-
-Note: Anycable won't autoload your new channels, so if you generate a new channel, you will need to stop your containers and run `docker-compose up --build`.
+You can skip the rest of the installation. Inside of `anycable.yml` change `rpc_host: "127.0.0.1:50051"` to `rpc_host: "0.0.0.0:50051"`
 
 ### Webpacker
 
