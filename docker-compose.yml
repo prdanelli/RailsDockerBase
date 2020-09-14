@@ -6,6 +6,9 @@ x-app: &app
     - /tmp
   stdin_open: true
   tty: true
+  # AnyCable/Rails/Sidekiq/Webpacker require this
+  volumes:
+    - .:/usr/src/app
   environment: &app_env
     ACTION_CABLE_ADAPTER: any_cable
     REDIS_URL: redis://redis:6379/0
@@ -50,9 +53,6 @@ services:
   sidekiq:
     <<: *app
     command: bundle exec sidekiq -C config/sidekiq.yml
-    volumes:
-      - .:/usr/src/app
-      - ./config/sidekiq.yml:/usr/src/app/config/sidekiq.yml
     depends_on:
       - rails
       - redis
@@ -75,8 +75,6 @@ services:
   webpacker:
     <<: *app
     command: bash -c "yarn && bin/webpack-dev-server"
-    volumes:
-      - .:/usr/src/app
     ports:
       - 3035:3035
     environment:
