@@ -70,13 +70,13 @@ Update the `sidekiq.yml` with any additionally required queues:
 ---
 :concurrency: 5
 staging:
-	:concurrency: 10
+  :concurrency: 10
 production:
-	:concurrency: 20
+  :concurrency: 20
 :queues:
-	- critical
-	- default
-	- low
+  - critical
+  - default
+  - low
 ```
 
 ### Action Cable
