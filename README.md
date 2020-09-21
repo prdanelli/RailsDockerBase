@@ -34,7 +34,7 @@ encoding: utf8mb4
 pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 username: root
 password: root
-host: db
+host: database
 ```
 
 ### Gems
@@ -140,6 +140,22 @@ Searchkick.client = Elasticsearch::Client.new(hosts: ["elasticsearch:9200"], ret
 
 Vips is installed on the image, to test Vips, go into the rails container `docker-compose exec rails bash`, then move to the public directory `cd /usr/src/app/public`. If you add an image file here, for example called "1.jpg", then you can use the following to rotate it 90 degrees and save it as "2.jpg", `vips rot 1.jpg 2.jpg d90`.
 
+### Development Web Console
+
+To get the web console working from within the Docker container, add the following to your `application.rb`
+
+```rb
+config.web_console.whitelisted_ips = ['172.16.0.0/12', '192.168.0.0/16']
+```
+
+### Adding Yarn/NPM packages
+
+To add new packages with Yarn, use the following on the command line:
+
+```bash
+docker-compose exec rails yarn add <package>
+```
+
 ## Finalising the container
 
 The container was built during the `run` process which created the Rails app, but we need to bring them up and copy all the new Gems and Node packages over:
@@ -166,4 +182,12 @@ To execute a command on a running container, use the following command:
 ```bash
 # docker-compose exec <container_name> <command>
 docker-compose exec rails rails db:migrate
+```
+
+## Debugging
+
+Byebug/Pry wont work with a normal container running, to get around this, you can start the containers in the background with the `-d` flag, then manually attach to the running rails container:
+
+```bash
+docker-compose up -d; docker attach rails_docker_base_rails_1
 ```
