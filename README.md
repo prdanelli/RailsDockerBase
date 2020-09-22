@@ -186,7 +186,7 @@ docker-compose exec rails rails db:migrate
 
 ## Debugging
 
-Byebug/Pry wont work with a normal container running, to get around this, you can start the containers in the background with the `-d` flag, then manually attach to the running rails container:
+Byebug/Pry wont work within a normally running container, to get around this, you can start the containers in the background with the `-d` flag, then manually attach to the running rails container:
 
 ```bash
 docker-compose up -d; docker attach rails_docker_base_rails_1
