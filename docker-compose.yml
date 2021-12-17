@@ -1,12 +1,13 @@
-version: "3.4"
+version: "2.4"
 
 x-app: &app
-  build: .
+  build:
+    context: .
+    dockerfile: Dockerfile
   tmpfs:
     - /tmp
   stdin_open: true
   tty: true
-  # AnyCable/Rails/Sidekiq/Webpacker require this
   volumes:
     - .:/usr/src/app
   environment: &app_env
@@ -14,7 +15,6 @@ x-app: &app
     REDIS_URL: redis://redis:6379/0
     REDIS_SIDEKIQ_URL: redis://redis:6379/1
     CABLE_URL: ws://localhost:8080/cable
-    WEBPACKER_DEV_SERVER_HOST: webpacker
     ANYCABLE_REDIS_URL: redis://redis:6379/3
     ANYCABLE_RPC_HOST: anycable:50051
     ANYCABLE_HOST: 0.0.0.0
@@ -29,22 +29,28 @@ services:
     volumes:
       - .:/usr/src/app
     depends_on:
-      - database
-      - webpacker
-      - websocket
+      sidekiq:
+        condition: service_started
+      websocket:
+        condition: service_started
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   database:
-    image: mariadb:10.5
+    image: postgres:latest
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: app_development
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: app_development
     volumes:
-      - ./docker/mysql/data:/var/lib/mysql
+      - ./.volumes/postgres/data:/var/lib/postgres/data
     ports:
-      - 3306:3306
-    restart: always
+      - 5432:5432
     healthcheck:
-      test: mysql --user=root --password=$$MYSQL_ROOT_PASSWORD -e 'SHOW DATABASES;'
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
       timeout: 5s
       retries: 5
 
@@ -52,31 +58,25 @@ services:
     <<: *app
     command: bundle exec sidekiq -C config/sidekiq.yml
     depends_on:
-      - rails
-      - redis
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       REDIS_URL: redis://redis:6379/1
 
   redis:
-    image: redis:6.0.6
+    image: redis:6.2.6
     ports:
       - 6379:6379
     volumes:
-      - ./docker/redis:/data
+      - ./.volumes/redis:/data
     command: ["--appendonly yes"]
     healthcheck:
       test: redis-cli ping
-      interval: 1s
-      timeout: 3s
+      interval: 10s
+      timeout: 5s
       retries: 30
-
-  webpacker:
-    <<: *app
-    command: bash -c "yarn && bin/webpack-dev-server"
-    ports:
-      - 3035:3035
-    environment:
-      WEBPACKER_DEV_SERVER_HOST: 0.0.0.0
 
   websocket:
     image: anycable/anycable-go:latest
@@ -85,7 +85,8 @@ services:
     environment:
       <<: *app_env
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
 
   anycable:
     <<: *app
@@ -93,21 +94,23 @@ services:
     ports:
       - 50051
     depends_on:
-      - websocket
-      - redis
+      websocket:
+        condition: service_started
+      redis:
+        condition: service_healthy
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.9.1
+    image: elasticsearch:7.16.1
     ports:
       - "9200:9200"
     volumes:
-      - ./docker/elasticsearch/:/usr/share/elasticsearch/data
+      - ./.volumes/elasticsearch/:/usr/share/elasticsearch/data
     environment:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - "discovery.type=single-node"
 
   kibana:
-    image: docker.elastic.co/kibana/kibana-oss:7.9.1
+    image: kibana:7.16.1
     ports:
       - "5601:5601"
     depends_on:
