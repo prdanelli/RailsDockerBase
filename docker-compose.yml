@@ -15,9 +15,9 @@ x-app: &app
     REDIS_URL: redis://redis:6379/0
     REDIS_SIDEKIQ_URL: redis://redis:6379/1
     CABLE_URL: ws://localhost:8080/cable
-    ANYCABLE_REDIS_URL: redis://redis:6379/3
+    ANYCABLE_REDIS_URL: redis://redis:6379/2
     ANYCABLE_RPC_HOST: anycable:50051
-    ANYCABLE_HOST: 0.0.0.0
+    ANYCABLE_HOST: "0.0.0.0"
     ANYCABLE_DEBUG: 1
 
 services:
@@ -92,7 +92,7 @@ services:
     <<: *app
     command: bundle exec anycable
     ports:
-      - 50051
+      - "50051"
     depends_on:
       websocket:
         condition: service_started

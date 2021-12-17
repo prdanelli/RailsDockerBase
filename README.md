@@ -5,7 +5,7 @@ This is a template for creating Docker based Rails development environments.
 ## Get Started
 
 ```bash
-docker-compose run --no-deps rails rails new . --skip-spring --skip-bootsnap --skip-coffee --webpack=stimulus --database=mysql
+docker-compose run --no-deps rails rails new . --skip-spring --skip-bootsnap --database=postgresql
 ```
 
 Select `n` when asked to override the `README.md` and `Gemfile`:
@@ -103,30 +103,6 @@ Overwrite /usr/src/app/config/cable.yml? (enter "h" for help) [Ynaqdhm] y
 ```
 
 You can skip the rest of the installation. Inside of `anycable.yml` change `rpc_host: "127.0.0.1:50051"` to `rpc_host: "0.0.0.0:50051"`
-
-### Webpacker
-
-You will need to change two keys in the `webpacker.yml` file, the `host` and `public` keys, as so:
-
-```yml
-dev_server:
-	host: webpacker
-	public: 0.0.0.0:3035
-```
-
-Add the following line to your `application.html.erb`:
-
-```erb
-<%= stylesheet_pack_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-```
-
-In your `app/javascripts/packs/application.js` all the following line:
-
-```js
-import "../css/application.scss"
-```
-
-Then create a file `app/javascript/css/application.scss` and add/import any application css in there to have it served and compiled by webpacker.
 
 ### Searchkick
 
